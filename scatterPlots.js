@@ -6,27 +6,14 @@ var getMeanGrade = function(entries)
             return entry.grade;
         })
 }
-//determines the max for scaling. 
-//tried to do this by doing student.type.max, but was not working. so did it this way. 
- var getMax = function(type)
-    {
-        if (type == "test")
+var getMax = function(students,type)
+{
+    return d3.max(students,function(student)
             {
-                return 100;
-            }
-        if (type == "quizes")
-            {
-                return 10;
-            }
-        if (type == "final")
-            {
-                return 100; 
-            }
-        if (type == "homework")
-            {
-                return 50;
-            }
-    }
+     return d3.max(student[type], function(entry)
+             {return entry.grade;})
+            })
+}
 //number of duration
 var dur = 1000;
 //draws scatter plot by taking 6 parameters. 
@@ -155,11 +142,11 @@ var initGraph = function(target,students)
 var calculateScales = function(graph, student, xProp, yProp)
 {
     var xScale = d3.scaleLinear()
-        .domain([0, getMax(xProp)])
+        .domain([0, getMax(student, xProp)])
         .range([0,graph.width])
            
     var yScale = d3.scaleLinear()
-        .domain([0, getMax(yProp) ])
+        .domain([0, getMax(student, yProp) ])
         .range([graph.height,0])
     
     return {xScale:xScale, yScale:yScale};
@@ -230,7 +217,7 @@ var setBanner = function(msg)
 
 
 
-var penguinPromise = d3.json("/classData.json");
+var penguinPromise = d3.json("classData.json");
 
 penguinPromise.then(function(penguins)
 {
